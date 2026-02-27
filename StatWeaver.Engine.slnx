@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="StatWeaver.Engine.API/StatWeaver.Engine.API.csproj" />
+  <Project Path="StatWeaver.Engine.Domain/StatWeaver.Engine.Domain.csproj" />
+</Solution>

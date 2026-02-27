@@ -1,0 +1,43 @@
+@StatWeaver.Engine.API_HostAddress = http://localhost:5213
+
+GET {{StatWeaver.Engine.Api_HostAddress}}/api/games
+
+###
+
+POST {{StatWeaver.Engine.Api_HostAddress}}/api/games
+Content-Type: application/json
+
+{
+  "id": 4,
+  "uid": "7faa90de-9a70-4802-a20f-cbe434bb7c98",
+  "identifikation": "G0004",
+  "name": "Cyberpunk 2077",
+  "isActive": true,
+  "createdAt": "2025-08-20T08:12:12",
+  "updatedAt": "2026-02-30T12:10:15"
+}
+
+###
+@aId=4
+DELETE {{StatWeaver.Engine.Api_HostAddress}}/api/games/{{aId}}
+
+###
+
+GET {{StatWeaver.Engine.Api_HostAddress}}/api/games/{{aId}}
+
+###
+
+PUT {{StatWeaver.Engine.Api_HostAddress}}/api/games/{{aId}}
+Content-Type: application/json
+
+{
+  "id": 4,
+  "uid": "7faa90de-9a70-4802-a20f-cbe434bb7c98",
+  "identifikation": "G0004",
+  "name": "Kingdom Come Deliverance",
+  "isActive": true,
+  "createdAt": "2025-08-20T08:12:12",
+  "updatedAt": "2026-02-30T12:10:15"
+}
+
+###
