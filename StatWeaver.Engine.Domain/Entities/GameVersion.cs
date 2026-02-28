@@ -1,6 +1,6 @@
 ﻿namespace StatWeaver.Engine.Domain.Entities;
 
-public class Game
+public class GameVersion
 {
 	public int Id { get; set; }
 
@@ -8,13 +8,17 @@ public class Game
 
 	public string Identification { get; set; }
 
-	public string Name { get; set; }
+	public string VersionLabel { get; set; }
 
-	public bool IsActive { get; set; }
+	public DateTime ReleasedAt { get; set; }
+
+	public bool IsDefault { get; set; }
 
 	public DateTime _CreatedAt { get; set; }
 
 	public DateTime _ModifiedAt { get; set; }
 
-	public IEnumerable<GameVersion> GameVersions { get; set; } 
+	public int GameId { get; set; }
+
+	public Game Game { get; set; }
 }
