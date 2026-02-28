@@ -10,9 +10,9 @@ public class GamesController : ControllerBase
 {
 	private static List<Game> _games = new List<Game>
 	{
-		new Game { Id = 1, Uid = Guid.NewGuid(), Identifikation = "G0001", Name = "Avowed", IsActive = true, _CreatedAt = new DateTime(2026, 1, 13, 08, 25, 15)},
-		new Game { Id = 2, Uid = Guid.NewGuid(), Identifikation = "G0002", Name = "Fallout 4", IsActive = true, _CreatedAt = new DateTime(2026, 1, 14, 12, 30, 45)},
-		new Game { Id = 3, Uid = Guid.NewGuid(), Identifikation = "G0003", Name = "Baldurs Gate 3", IsActive = false, _CreatedAt = new DateTime(2026, 2, 20, 3, 14, 28)}
+		new Game { Id = 1, Uid = Guid.NewGuid(), Identification = "G0001", Name = "Avowed", IsActive = true, _CreatedAt = new DateTime(2026, 1, 13, 08, 25, 15)},
+		new Game { Id = 2, Uid = Guid.NewGuid(), Identification = "G0002", Name = "Fallout 4", IsActive = true, _CreatedAt = new DateTime(2026, 1, 14, 12, 30, 45)},
+		new Game { Id = 3, Uid = Guid.NewGuid(), Identification = "G0003", Name = "Baldurs Gate 3", IsActive = false, _CreatedAt = new DateTime(2026, 2, 20, 3, 14, 28)}
 	};
 
 	// GET: api/<GamesController>
