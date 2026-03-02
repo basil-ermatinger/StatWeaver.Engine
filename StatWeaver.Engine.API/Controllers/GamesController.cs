@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 using StatWeaver.Engine.Domain.Entities;
+using StatWeaver.Engine.Infrastructure.DbContexts;
 
 namespace StatWeaver.Engine.API.Controllers;
 
@@ -8,79 +10,93 @@ namespace StatWeaver.Engine.API.Controllers;
 [ApiController]
 public class GamesController : ControllerBase
 {
-	private static List<Game> _games = new List<Game>
-	{
-		new Game { Id = 1, Uid = Guid.NewGuid(), Identifikation = "G0001", Name = "Avowed", IsActive = true, _CreatedAt = new DateTime(2026, 1, 13, 08, 25, 15)},
-		new Game { Id = 2, Uid = Guid.NewGuid(), Identifikation = "G0002", Name = "Fallout 4", IsActive = true, _CreatedAt = new DateTime(2026, 1, 14, 12, 30, 45)},
-		new Game { Id = 3, Uid = Guid.NewGuid(), Identifikation = "G0003", Name = "Baldurs Gate 3", IsActive = false, _CreatedAt = new DateTime(2026, 2, 20, 3, 14, 28)}
-	};
+  private readonly StatWeaverDbContext _context;
 
-	// GET: api/<GamesController>
-	[HttpGet]
-	public ActionResult<IEnumerable<Game>> Get()
-	{
-		return Ok(_games);
-	}
+  public GamesController(StatWeaverDbContext aContext)
+  {
+    _context = aContext;
+  }
 
-	// GET api/<GamesController>/5
-	[HttpGet("{aId}")]
-	public ActionResult<Game> Get(int aId)
-	{
-		Game? games = _games.FirstOrDefault(u => u.Id == aId);
+  // GET: api/Games
+  [HttpGet]
+  public async Task<ActionResult<IEnumerable<Game>>> GetGames()
+  {
+    return await _context.Games.ToListAsync();
+  }
 
-		if(games == null)
-		{
-			return NotFound();
-		}
+  // GET: api/Games/5
+  [HttpGet("{aId}")]
+  public async Task<ActionResult<Game>> GetGame(int aId)
+  {
+    Game? games = await _context.Games.FindAsync(aId);
 
-		return Ok(games);
-	}
+    if (games == null)
+    {
+      return NotFound();
+    }
 
-	// POST api/<GamesController>
-	[HttpPost]
-	public ActionResult<Game> Post([FromBody] Game aNewGame)
-	{
-		if(_games.Any(e => e.Id == aNewGame.Id))
-		{
-			return BadRequest($"A game with the Id {aNewGame.Id} already exists.");
-		}
+    return games;
+  }
 
-		_games.Add(aNewGame);
+  // PUT: api/Games/5
+  [HttpPut("{aId}")]
+  public async Task<IActionResult> PutGame(int aId, Game aGame)
+  {
+    if (aId != aGame.Id)
+    {
+      return BadRequest();
+    }
 
-		return CreatedAtAction(nameof(Get), new { id = aNewGame.Id }, aNewGame);
-	}
+    _context.Entry(aGame).State = EntityState.Modified;
 
-	// PUT api/<GamesController>/5
-	[HttpPut("{aId}")]
-	public ActionResult Put(int aId, [FromBody] Game aUpdatedGame)
-	{
-		Game? existingGame = _games.FirstOrDefault(e => e.Id == aId);
+    try
+    {
+      await _context.SaveChangesAsync();
+    }
+    catch (DbUpdateConcurrencyException)
+    {
+      if (!GameExists(aId))
+      {
+        return NotFound();
+      }
+      else
+      {
+        throw;
+      }
+    }
 
-		if(existingGame == null)
-		{
-			return NotFound();
-		}
+    return NoContent();
+  }
 
-		existingGame.Name = aUpdatedGame.Name;
-		existingGame.IsActive = aUpdatedGame.IsActive;
-		existingGame._ModifiedAt = DateTime.Now;
+  // POST: api/Games
+  [HttpPost]
+  public async Task<ActionResult<Game>> PostGame(Game game)
+  {
+      _context.Games.Add(game);
+      await _context.SaveChangesAsync();
 
-		return NoContent();
-	}
+      return CreatedAtAction("GetGame", new { id = game.Id }, game);
+  }
 
-	// DELETE api/<GamesController>/5
-	[HttpDelete("{aId}")]
-	public ActionResult Delete(int aId)
-	{
-		Game? game = _games.FirstOrDefault(e => e.Id == aId);
+  // DELETE: api/Games/5
+  [HttpDelete("{aId}")]
+  public async Task<IActionResult> DeleteGame(int aId)
+  {
+			Game? game = await _context.Games.FindAsync(aId);
+    
+    if (game == null)
+    {
+      return NotFound();
+    }
 
-		if(game == null)
-		{
-			return NotFound(new { message = "Game not found" });
-		}
+    _context.Games.Remove(game);
+    await _context.SaveChangesAsync();
 
-		_games.Remove(game);
+    return NoContent();
+  }
 
-		return NoContent();
-	}
+  private bool GameExists(int aId)
+  {
+    return _context.Games.Any(e => e.Id == aId);
+  }
 }
