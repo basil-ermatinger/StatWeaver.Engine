@@ -72,17 +72,17 @@ public class GamesController : ControllerBase
   [HttpPost]
   public async Task<ActionResult<Game>> PostGame(Game game)
   {
-      _context.Games.Add(game);
-      await _context.SaveChangesAsync();
+    _context.Games.Add(game);
+    await _context.SaveChangesAsync();
 
-      return CreatedAtAction("GetGame", new { id = game.Id }, game);
+    return CreatedAtAction("GetGame", new { aId = game.Id }, game);
   }
 
   // DELETE: api/Games/5
   [HttpDelete("{aId}")]
   public async Task<IActionResult> DeleteGame(int aId)
   {
-			Game? game = await _context.Games.FindAsync(aId);
+		Game? game = await _context.Games.FindAsync(aId);
     
     if (game == null)
     {
