@@ -9,6 +9,7 @@ POST {{StatWeaver.Engine.API_HostAddress}}/api/games
 Content-Type: application/json
 
 {
+  "Uid": "d5811ace-c9d9-478f-86f6-7ae0b03d1bd7",
   "Identification": "G1",
   "Name": "The Witcher 3",
   "IsActive": true
@@ -16,7 +17,7 @@ Content-Type: application/json
 
 ###
 
-@aId=1
+@aId=10
 DELETE {{StatWeaver.Engine.API_HostAddress}}/api/games/{{aId}}
 
 ###
@@ -29,6 +30,8 @@ PUT {{StatWeaver.Engine.API_HostAddress}}/api/games/{{aId}}
 Content-Type: application/json
 
 {
+  "Id": 7,
+  "Identification": "G1",
   "Name": "Fallout 4",
   "IsActive": true
 }
@@ -43,8 +46,12 @@ POST {{StatWeaver.Engine.API_HostAddress}}/api/gameversions
 Content-Type: application/json
 
 {
-  "Name": "Fallout 4",
-  "IsActive": true
+  "Uid": "c55f6f10-58d7-4826-af9d-03cf4702644f",
+  "Identification": "GV1",
+  "VersionLabel": "1.0.0.0",
+  "ReleaseAt": "2024-06-01T00:00:00",
+  "IsDefault": true,
+  "GameId": 5
 }
 
 ###
@@ -52,7 +59,6 @@ Content-Type: application/json
 DELETE {{StatWeaver.Engine.API_HostAddress}}/api/gameversions/{{aId}}
 
 ###
-
 GET {{StatWeaver.Engine.API_HostAddress}}/api/gameversions/{{aId}}
 
 ###
@@ -61,8 +67,12 @@ PUT {{StatWeaver.Engine.API_HostAddress}}/api/gameversions/{{aId}}
 Content-Type: application/json
 
 {
-  "Name": "Fallout 4",
-  "IsActive": true
+  "Id": 10,
+  "Identification": "GV1",
+  "VersionLabel": "1.0.0.1",
+  "ReleaseAt": "2025-06-01",
+  "IsDefault": true,
+  "GameId": 5
 }
 
 ###
