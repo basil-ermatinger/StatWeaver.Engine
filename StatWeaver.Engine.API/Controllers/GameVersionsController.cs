@@ -39,7 +39,6 @@ namespace StatWeaver.Engine.API.Controllers
     }
 
     // PUT: api/GameVersions/5
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPut("{aId}")]
     public async Task<IActionResult> PutGameVersion(int aId, GameVersion aGameVersion)
     {

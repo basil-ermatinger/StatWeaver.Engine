@@ -17,14 +17,12 @@ public class GamesController : ControllerBase
     _context = aContext;
   }
 
-  // GET: api/Games
   [HttpGet]
   public async Task<ActionResult<IEnumerable<Game>>> GetGames()
   {
     return await _context.Games.ToListAsync();
   }
 
-  // GET: api/Games/5
   [HttpGet("{aId}")]
   public async Task<ActionResult<Game>> GetGame(int aId)
   {
@@ -38,7 +36,6 @@ public class GamesController : ControllerBase
     return games;
   }
 
-  // PUT: api/Games/5
   [HttpPut("{aId}")]
   public async Task<IActionResult> PutGame(int aId, Game aGame)
   {
@@ -55,7 +52,7 @@ public class GamesController : ControllerBase
     }
     catch (DbUpdateConcurrencyException)
     {
-      if (!GameExists(aId))
+      if (! await GameExistsAsync(aId))
       {
         return NotFound();
       }
@@ -68,7 +65,6 @@ public class GamesController : ControllerBase
     return NoContent();
   }
 
-  // POST: api/Games
   [HttpPost]
   public async Task<ActionResult<Game>> PostGame(Game game)
   {
@@ -78,7 +74,6 @@ public class GamesController : ControllerBase
     return CreatedAtAction("GetGame", new { aId = game.Id }, game);
   }
 
-  // DELETE: api/Games/5
   [HttpDelete("{aId}")]
   public async Task<IActionResult> DeleteGame(int aId)
   {
@@ -95,8 +90,8 @@ public class GamesController : ControllerBase
     return NoContent();
   }
 
-  private bool GameExists(int aId)
+  private async Task<bool> GameExistsAsync(int aId)
   {
-    return _context.Games.Any(e => e.Id == aId);
+    return await _context.Games.AnyAsync(e => e.Id == aId);
   }
 }
