@@ -26,14 +26,14 @@ public class GamesController : ControllerBase
   [HttpGet("{aId}")]
   public async Task<ActionResult<Game>> GetGame(int aId)
   {
-    Game? games = await _context.Games.FindAsync(aId);
+    Game? game = await _context.Games.FindAsync(aId);
 
-    if (games == null)
+    if (game == null)
     {
       return NotFound();
     }
 
-    return games;
+    return game;
   }
 
   [HttpPut("{aId}")]

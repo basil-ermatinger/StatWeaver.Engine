@@ -4,100 +4,95 @@ using Microsoft.EntityFrameworkCore;
 using StatWeaver.Engine.Domain.Entities;
 using StatWeaver.Engine.Infrastructure.DbContexts;
 
-namespace StatWeaver.Engine.API.Controllers
+namespace StatWeaver.Engine.API.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class GameVersionsController : ControllerBase
 {
-  [Route("api/[controller]")]
-  [ApiController]
-  public class GameVersionsController : ControllerBase
+  private readonly StatWeaverDbContext _context;
+
+  public GameVersionsController(StatWeaverDbContext aContext)
   {
-    private readonly StatWeaverDbContext _context;
+    _context = aContext;
+  }
 
-    public GameVersionsController(StatWeaverDbContext aContext)
+    
+  [HttpGet]
+  public async Task<ActionResult<IEnumerable<GameVersion>>> GetGameVersions()
+  {
+    return await _context.GameVersions.ToListAsync();
+  }
+
+  [HttpGet("{aId}")]
+  public async Task<ActionResult<GameVersion>> GetGameVersion(int aId)
+  {
+		GameVersion? gameVersion = await _context.GameVersions.FindAsync(aId);
+
+    if (gameVersion == null)
     {
-      _context = aContext;
+      return NotFound();
     }
 
-    // GET: api/GameVersions
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<GameVersion>>> GetGameVersions()
+    return gameVersion;
+  }
+
+  [HttpPut("{aId}")]
+  public async Task<IActionResult> PutGameVersion(int aId, GameVersion aGameVersion)
+  {
+    if (aId != aGameVersion.Id)
     {
-      return await _context.GameVersions.ToListAsync();
+      return BadRequest();
     }
 
-    // GET: api/GameVersions/5
-    [HttpGet("{aId}")]
-    public async Task<ActionResult<GameVersion>> GetGameVersion(int aId)
-    {
-      GameVersion? gameVersions = await _context.GameVersions.FindAsync(aId);
+    _context.Entry(aGameVersion).State = EntityState.Modified;
 
-      if (gameVersions == null)
+    try
+    {
+      await _context.SaveChangesAsync();
+    }
+    catch (DbUpdateConcurrencyException)
+    {
+      if (! await GameVersionExists(aId))
       {
         return NotFound();
       }
-
-      return gameVersions;
+      else
+      {
+        throw;
+      }
     }
 
-    // PUT: api/GameVersions/5
-    [HttpPut("{aId}")]
-    public async Task<IActionResult> PutGameVersion(int aId, GameVersion aGameVersion)
+    return NoContent();
+  }
+
+  [HttpPost]
+  public async Task<ActionResult<GameVersion>> PostGameVersion(GameVersion aGameVersion)
+  {
+    _context.GameVersions.Add(aGameVersion);
+    await _context.SaveChangesAsync();
+
+    return CreatedAtAction("GetGameVersion", new { aId = aGameVersion.Id }, aGameVersion);
+  }
+
+  [HttpDelete("{aId}")]
+  public async Task<IActionResult> DeleteGameVersion(int aId)
+  {
+		GameVersion? gameVersion = await _context.GameVersions.FindAsync(aId);
+
+    if (gameVersion == null)
     {
-      if (aId != aGameVersion.Id)
-      {
-        return BadRequest();
-      }
-
-      _context.Entry(aGameVersion).State = EntityState.Modified;
-
-      try
-      {
-        await _context.SaveChangesAsync();
-      }
-      catch (DbUpdateConcurrencyException)
-      {
-        if (!GameVersionExists(aId))
-        {
-          return NotFound();
-        }
-        else
-        {
-          throw;
-        }
-      }
-
-      return NoContent();
-    }
-
-    // POST: api/GameVersions
-    [HttpPost]
-    public async Task<ActionResult<GameVersion>> PostGameVersion(GameVersion aGameVersion)
-    {
-      _context.GameVersions.Add(aGameVersion);
-      await _context.SaveChangesAsync();
-
-      return CreatedAtAction("GetGameVersion", new { id = aGameVersion.Id }, aGameVersion);
-    }
-
-    // DELETE: api/GameVersions/5
-    [HttpDelete("{aId}")]
-    public async Task<IActionResult> DeleteGameVersion(int aId)
-    {
-			GameVersion? gameVersions = await _context.GameVersions.FindAsync(aId);
-
-      if (gameVersions == null)
-      {
         return NotFound();
-      }
-
-      _context.GameVersions.Remove(gameVersions);
-      await _context.SaveChangesAsync();
-
-      return NoContent();
     }
 
-    private bool GameVersionExists(int aId)
-    {
-      return _context.GameVersions.Any(e => e.Id == aId);
-    }
+    _context.GameVersions.Remove(gameVersion);
+    await _context.SaveChangesAsync();
+
+    return NoContent();
+  }
+
+  private async Task<bool> GameVersionExists(int aId)
+  {
+    return await _context.GameVersions.AnyAsync(e => e.Id == aId);
   }
 }
