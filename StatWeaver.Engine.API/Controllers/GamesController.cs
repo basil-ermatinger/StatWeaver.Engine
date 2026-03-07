@@ -26,7 +26,9 @@ public class GamesController : ControllerBase
   [HttpGet("{aId}")]
   public async Task<ActionResult<Game>> GetGame(int aId)
   {
-    Game? game = await _context.Games.FindAsync(aId);
+    Game? game = await _context.Games
+      .Include(g => g.GameVersions)
+      .FirstOrDefaultAsync(g => g.Id == aId);
 
     if (game == null)
     {
