@@ -16,12 +16,13 @@ public class GameVersionsController : ControllerBase
   {
     _context = aContext;
   }
-
     
   [HttpGet]
   public async Task<ActionResult<IEnumerable<GameVersion>>> GetGameVersions()
   {
-    return await _context.GameVersions.ToListAsync();
+    return await _context.GameVersions
+      .Include(gv => gv.Game)
+      .ToListAsync();
   }
 
   [HttpGet("{aId}")]
