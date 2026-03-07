@@ -1,5 +1,5 @@
 --------------------------------------------------
--- 1) Hier die gewünschten Tabellen eintragen
+-- 1) Gewünschte Tabellen eintragen
 --    Schema + Tabellenname
 --------------------------------------------------
 DECLARE @TargetTables TABLE
@@ -26,18 +26,13 @@ DECLARE @ValidatedTables TABLE
 INSERT INTO @ValidatedTables (SchemaName, TableName)
 SELECT tt.SchemaName, tt.TableName
 FROM @TargetTables tt
-INNER JOIN sys.tables t
-    ON t.name = tt.TableName
-INNER JOIN sys.schemas s
-    ON s.schema_id = t.schema_id
-   AND s.name = tt.SchemaName;
+INNER JOIN sys.tables t ON t.name = tt.TableName
+INNER JOIN sys.schemas s ON s.schema_id = t.schema_id AND s.name = tt.SchemaName;
 
 --------------------------------------------------
--- 3) Optional anzeigen, welche Tabellen betroffen sind
+-- 3) Anzeigen, welche Tabellen betroffen sind
 --------------------------------------------------
-SELECT 
-    SchemaName,
-    TableName
+SELECT SchemaName, TableName
 FROM @ValidatedTables
 ORDER BY SchemaName, TableName;
 
@@ -49,9 +44,7 @@ DECLARE @sql NVARCHAR(MAX) = N'';
 --------------------------------------------------
 -- 5) Foreign Keys für diese Tabellen deaktivieren
 --------------------------------------------------
-SELECT @sql = @sql +
-    N'ALTER TABLE ' + QUOTENAME(vt.SchemaName) + N'.' + QUOTENAME(vt.TableName) +
-    N' NOCHECK CONSTRAINT ALL;' + CHAR(13) + CHAR(10)
+SELECT @sql = @sql + N'ALTER TABLE ' + QUOTENAME(vt.SchemaName) + N'.' + QUOTENAME(vt.TableName) + N' NOCHECK CONSTRAINT ALL;' + CHAR(13) + CHAR(10)
 FROM @ValidatedTables vt
 ORDER BY vt.SchemaName, vt.TableName;
 
@@ -62,9 +55,7 @@ EXEC sp_executesql @sql;
 --------------------------------------------------
 SET @sql = N'';
 
-SELECT @sql = @sql +
-    N'DELETE FROM ' + QUOTENAME(vt.SchemaName) + N'.' + QUOTENAME(vt.TableName) +
-    N';' + CHAR(13) + CHAR(10)
+SELECT @sql = @sql + N'DELETE FROM ' + QUOTENAME(vt.SchemaName) + N'.' + QUOTENAME(vt.TableName) + N';' + CHAR(13) + CHAR(10)
 FROM @ValidatedTables vt
 ORDER BY vt.SchemaName, vt.TableName;
 
@@ -76,16 +67,11 @@ EXEC sp_executesql @sql;
 --------------------------------------------------
 SET @sql = N'';
 
-SELECT @sql = @sql +
-    N'DBCC CHECKIDENT (''' + vt.SchemaName + N'.' + vt.TableName + N''', RESEED, 0);' + CHAR(13) + CHAR(10)
+SELECT @sql = @sql + N'DBCC CHECKIDENT (''' + vt.SchemaName + N'.' + vt.TableName + N''', RESEED, 0);' + CHAR(13) + CHAR(10)
 FROM @ValidatedTables vt
-INNER JOIN sys.tables t
-    ON t.name = vt.TableName
-INNER JOIN sys.schemas s
-    ON s.schema_id = t.schema_id
-   AND s.name = vt.SchemaName
-INNER JOIN sys.identity_columns ic
-    ON ic.object_id = t.object_id
+INNER JOIN sys.tables t ON t.name = vt.TableName
+INNER JOIN sys.schemas s ON s.schema_id = t.schema_id AND s.name = vt.SchemaName
+INNER JOIN sys.identity_columns ic ON ic.object_id = t.object_id
 ORDER BY vt.SchemaName, vt.TableName;
 
 EXEC sp_executesql @sql;
@@ -95,9 +81,7 @@ EXEC sp_executesql @sql;
 --------------------------------------------------
 SET @sql = N'';
 
-SELECT @sql = @sql +
-    N'ALTER TABLE ' + QUOTENAME(vt.SchemaName) + N'.' + QUOTENAME(vt.TableName) +
-    N' WITH CHECK CHECK CONSTRAINT ALL;' + CHAR(13) + CHAR(10)
+SELECT @sql = @sql + N'ALTER TABLE ' + QUOTENAME(vt.SchemaName) + N'.' + QUOTENAME(vt.TableName) + N' WITH CHECK CHECK CONSTRAINT ALL;' + CHAR(13) + CHAR(10)
 FROM @ValidatedTables vt
 ORDER BY vt.SchemaName, vt.TableName;
 
