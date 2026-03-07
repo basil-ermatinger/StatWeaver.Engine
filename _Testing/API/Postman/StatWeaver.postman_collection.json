@@ -1,0 +1,149 @@
+{
+	"info": {
+		"_postman_id": "e6d0fc78-fc22-48a6-97cf-40819fd0203d",
+		"name": "StatWeaver",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33804258"
+	},
+	"item": [
+		{
+			"name": "GetGames",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{StatWeaver.Engine.API_HostAddress}}/api/games",
+					"host": [
+						"{{StatWeaver.Engine.API_HostAddress}}"
+					],
+					"path": [
+						"api",
+						"games"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PostGame",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"Uid\": \"d5811ace-c9d9-478f-86f6-7ae0b03d1bd7\",\r\n  \"Identification\": \"G1\",\r\n  \"Name\": \"The Witcher 3\",\r\n  \"IsActive\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{StatWeaver.Engine.API_HostAddress}}/api/games",
+					"host": [
+						"{{StatWeaver.Engine.API_HostAddress}}"
+					],
+					"path": [
+						"api",
+						"games"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteGame",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{StatWeaver.Engine.API_HostAddress}}/api/games/1",
+					"host": [
+						"{{StatWeaver.Engine.API_HostAddress}}"
+					],
+					"path": [
+						"api",
+						"games",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetGame",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{StatWeaver.Engine.API_HostAddress}}/api/games/2",
+					"host": [
+						"{{StatWeaver.Engine.API_HostAddress}}"
+					],
+					"path": [
+						"api",
+						"games",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PutGame",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"Id\": 2,\r\n  \"Identification\": \"G1\",\r\n  \"Name\": \"Fallout 4\",\r\n  \"IsActive\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{StatWeaver.Engine.API_HostAddress}}/api/games/2",
+					"host": [
+						"{{StatWeaver.Engine.API_HostAddress}}"
+					],
+					"path": [
+						"api",
+						"games",
+						"2"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "StatWeaver.Engine.API_HostAddress",
+			"value": ""
+		}
+	]
+}
