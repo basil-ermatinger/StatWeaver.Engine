@@ -20,15 +20,15 @@ public class GameVersionsController : ControllerBase
   [HttpGet]
   public async Task<ActionResult<IEnumerable<GameVersion>>> GetGameVersions()
   {
-    return await _context.GameVersions
-      .Include(gv => gv.Game)
-      .ToListAsync();
+    return await _context.GameVersions.ToListAsync();
   }
 
   [HttpGet("{aId}")]
   public async Task<ActionResult<GameVersion>> GetGameVersion(int aId)
   {
-		GameVersion? gameVersion = await _context.GameVersions.FindAsync(aId);
+    GameVersion? gameVersion = await _context.GameVersions
+      .Include(gv => gv.Game)
+      .FirstOrDefaultAsync(gv => gv.Id == aId);
 
     if (gameVersion == null)
     {
