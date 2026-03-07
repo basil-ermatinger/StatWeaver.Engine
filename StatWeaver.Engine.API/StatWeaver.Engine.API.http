@@ -1,5 +1,8 @@
 @StatWeaver.Engine.API_HostAddress = https://localhost:7285
 
+###########################################################
+### GAMES #################################################
+###########################################################
 
 GET {{StatWeaver.Engine.API_HostAddress}}/api/games
 
@@ -36,7 +39,9 @@ Content-Type: application/json
   "IsActive": true
 }
 
-###
+###########################################################
+### GAMEVERSIONS ##########################################
+###########################################################
 
 GET {{StatWeaver.Engine.API_HostAddress}}/api/gameversions
 
@@ -51,7 +56,7 @@ Content-Type: application/json
   "VersionLabel": "1.0.0.0",
   "ReleaseAt": "2024-06-01T00:00:00",
   "IsDefault": true,
-  "GameId": 5
+  "GameId": 1
 }
 
 ###
