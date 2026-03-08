@@ -1,4 +1,6 @@
-﻿namespace StatWeaver.Engine.Domain.Entities;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace StatWeaver.Engine.Domain.Entities;
 
 public class GameVersion
 {
@@ -6,11 +8,10 @@ public class GameVersion
 
 	public Guid Uid { get; set; }
 
-	public string Identification { get; set; }
+	[MaxLength(50)]
+	public required string VersionLabel { get; set; }
 
-	public string VersionLabel { get; set; }
-
-	public DateTime ReleasedAt { get; set; }
+	public required DateTime ReleasedAt { get; set; }
 
 	public bool IsDefault { get; set; }
 
