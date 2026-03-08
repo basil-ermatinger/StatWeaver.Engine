@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.EntityFrameworkCore.Metadata;
 using StatWeaver.Engine.Domain.Entities;
 
@@ -29,33 +30,36 @@ public class StatWeaverDbContext : DbContext
 
 	public override int SaveChanges()
 	{
-		UpdateTimestamps();
+		ApplyChangeTracking();
 		return base.SaveChanges();
 	}
 
 	public override Task<int> SaveChangesAsync(CancellationToken aCancellationToken = default)
 	{
-		UpdateTimestamps();
+		ApplyChangeTracking();
 		return base.SaveChangesAsync(aCancellationToken);
 	}
 
-	private void UpdateTimestamps()
+	private void ApplyChangeTracking()
 	{
-		IEnumerable<EntityEntry> entries = ChangeTracker.Entries().Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
+		IEnumerable<EntityEntry> entries = ChangeTracker.Entries()
+			.Where(e => e.State == EntityState.Added || e.State == EntityState.Modified)
+			.ToList();
 
-		foreach (EntityEntry? entry in entries)
+		foreach (EntityEntry entry in entries)
 		{
-			PropertyEntry? createdAtProperty = entry.Property("_CreatedAt");
-			PropertyEntry? modifiedAtProperty = entry.Property("_ModifiedAt");
-
+			DateTime now = DateTime.Now;
+			
 			if (entry.State == EntityState.Added)
 			{
-				createdAtProperty?.CurrentValue = DateTime.Now;
-				modifiedAtProperty?.CurrentValue = DateTime.Now;
-			}
-			else if (entry.State == EntityState.Modified)
+				entry.Property("_CreatedAt")?.CurrentValue = now;
+				entry.Property("_ModifiedAt")?.CurrentValue = now;
+			} 
+			else
 			{
-				modifiedAtProperty?.CurrentValue = DateTime.Now;
+				entry.Property("Uid").IsModified = false;
+				entry.Property("_CreatedAt").IsModified = false;
+				entry.Property("_ModifiedAt")?.CurrentValue = now;
 			}
 		}
 	}
