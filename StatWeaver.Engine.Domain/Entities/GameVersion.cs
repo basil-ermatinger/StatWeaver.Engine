@@ -8,7 +8,6 @@ public class GameVersion
 
 	public Guid Uid { get; set; }
 
-	[MaxLength(50)]
 	public required string VersionLabel { get; set; }
 
 	public required DateTime ReleasedAt { get; set; }
@@ -19,7 +18,7 @@ public class GameVersion
 
 	public DateTime _ModifiedAt { get; set; }
 
-	public int GameId { get; set; }
+	public required int GameId { get; set; }
 
 	public Game? Game { get; set; }
 }

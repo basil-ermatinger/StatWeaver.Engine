@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="StatWeaver.Engine.API/StatWeaver.Engine.API.csproj" />
+  <Project Path="StatWeaver.Engine.Application/StatWeaver.Engine.Application.csproj" Id="9fb26804-2c73-4fba-955e-306fb6e386b2" />
   <Project Path="StatWeaver.Engine.Domain/StatWeaver.Engine.Domain.csproj" />
   <Project Path="StatWeaver.Engine.Infrastructure/StatWeaver.Engine.Infrastructure.csproj" Id="a90e7733-3d48-461f-ba80-77e72e1a9195" />
 </Solution>

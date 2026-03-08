@@ -8,7 +8,6 @@ public class Game
 
 	public Guid Uid { get; set; }
 
-	[MaxLength(50)]
 	public required string Name { get; set; }
 
 	public bool IsActive { get; set; }
