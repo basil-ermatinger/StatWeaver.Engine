@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\StatWeaver.Engine.Application\StatWeaver.Engine.Application.csproj" />
     <ProjectReference Include="..\StatWeaver.Engine.Domain\StatWeaver.Engine.Domain.csproj" />
     <ProjectReference Include="..\StatWeaver.Engine.Infrastructure\StatWeaver.Engine.Infrastructure.csproj" />
   </ItemGroup>

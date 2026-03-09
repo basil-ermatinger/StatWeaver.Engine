@@ -1,6 +1,9 @@
-﻿namespace StatWeaver.Engine.Application.Dtos.Game;
+﻿using StatWeaver.Engine.Application.Dtos.GameVersion;
+
+namespace StatWeaver.Engine.Application.Dtos.Game;
 
 public record GameDto(
 	int Id,
 	string Name,
-	bool IsActive);
+	bool IsActive,
+	List<GameVersionSlimDto>? GameVersions);

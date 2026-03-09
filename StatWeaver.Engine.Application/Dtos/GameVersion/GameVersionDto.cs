@@ -5,4 +5,4 @@ public record GameVersionDto(
 	string VersionLabel, 
 	DateTime ReleasedAt, 
 	bool IsDefault, 
-	string Game);
+	int GameId);

@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
+using StatWeaver.Engine.Application.Dtos.GameVersion;
 using StatWeaver.Engine.Domain.Entities;
 using StatWeaver.Engine.Infrastructure.DbContexts;
 
 namespace StatWeaver.Engine.API.Controllers;
+
+// TODO: StatWeaver.Engine.API hat zurzeit noch eine Reference auf Domain. Diese muss später entfernt werden.
 
 [Route("api/[controller]")]
 [ApiController]
@@ -18,17 +20,22 @@ public class GameVersionsController : ControllerBase
   }
     
   [HttpGet]
-  public async Task<ActionResult<IEnumerable<GameVersion>>> GetGameVersions()
+  public async Task<ActionResult<IEnumerable<GameVersionDto>>> GetGameVersions()
   {
-    return await _context.GameVersions.ToListAsync();
+    List<GameVersionDto> gameVersions = await _context.GameVersions
+      .Select(gv => new GameVersionDto(gv.Id, gv.VersionLabel, gv.ReleasedAt, gv.IsDefault, gv.GameId))
+      .ToListAsync();
+
+    return Ok(gameVersions);
   }
 
   [HttpGet("{aId}")]
-  public async Task<ActionResult<GameVersion>> GetGameVersion(int aId)
+  public async Task<ActionResult<GameVersionDto>> GetGameVersion(int aId)
   {
-    GameVersion? gameVersion = await _context.GameVersions
-      .Include(gv => gv.Game)
-      .FirstOrDefaultAsync(gv => gv.Id == aId);
+    GameVersionDto? gameVersion = await _context.GameVersions
+      .Where(gv => gv.Id == aId)
+      .Select(gv => new GameVersionDto(gv.Id, gv.VersionLabel, gv.ReleasedAt, gv.IsDefault, gv.GameId))
+      .FirstOrDefaultAsync();
 
     if (gameVersion == null)
     {
@@ -39,14 +46,27 @@ public class GameVersionsController : ControllerBase
   }
 
   [HttpPut("{aId}")]
-  public async Task<IActionResult> PutGameVersion(int aId, GameVersion aGameVersion)
+  public async Task<IActionResult> PutGameVersion(int aId, GameVersionDto aGameVersionDto)
   {
-    if (aId != aGameVersion.Id)
+    if (aId != aGameVersionDto.Id)
     {
       return BadRequest();
     }
 
-    _context.Entry(aGameVersion).State = EntityState.Modified;
+		GameVersion? gameVersion = await _context.GameVersions.FindAsync(aId);
+
+    if (gameVersion == null)
+    {
+      return NotFound();
+    }
+
+    gameVersion.Id = aGameVersionDto.Id;
+    gameVersion.VersionLabel = aGameVersionDto.VersionLabel;
+    gameVersion.ReleasedAt = aGameVersionDto.ReleasedAt;
+    gameVersion.IsDefault = aGameVersionDto.IsDefault;
+    gameVersion.GameId = aGameVersionDto.GameId;
+
+    _context.Entry(gameVersion).State = EntityState.Modified;
 
     try
     {
@@ -68,12 +88,21 @@ public class GameVersionsController : ControllerBase
   }
 
   [HttpPost]
-  public async Task<ActionResult<GameVersion>> PostGameVersion(GameVersion aGameVersion)
+  public async Task<ActionResult<GameVersionDto>> PostGameVersion(GameVersionDto aGameVersionDto)
   {
-    _context.GameVersions.Add(aGameVersion);
+    GameVersion gameVersion = new GameVersion
+    {
+      Id = aGameVersionDto.Id,
+      VersionLabel = aGameVersionDto.VersionLabel,
+      ReleasedAt = aGameVersionDto.ReleasedAt,
+      IsDefault = aGameVersionDto.IsDefault,
+      GameId = aGameVersionDto.GameId
+    };
+
+    _context.GameVersions.Add(gameVersion);
     await _context.SaveChangesAsync();
 
-    return CreatedAtAction("GetGameVersion", new { aId = aGameVersion.Id }, aGameVersion);
+    return CreatedAtAction("GetGameVersion", new { aId = aGameVersionDto.Id }, aGameVersionDto);
   }
 
   [HttpDelete("{aId}")]

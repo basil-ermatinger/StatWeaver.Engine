@@ -16,5 +16,5 @@ public class Game
 
 	public DateTime _ModifiedAt { get; set; }
 
-	public IEnumerable<GameVersion>? GameVersions { get; set; } 
+	public ICollection<GameVersion>? GameVersions { get; set; } 
 }
