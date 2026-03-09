@@ -1,4 +1,6 @@
-﻿namespace StatWeaver.Engine.Domain.Entities;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace StatWeaver.Engine.Domain.Entities;
 
 public class Game
 {
@@ -6,9 +8,7 @@ public class Game
 
 	public Guid Uid { get; set; }
 
-	public string? Identification { get; set; }
-
-	public string Name { get; set; }
+	public required string Name { get; set; }
 
 	public bool IsActive { get; set; }
 
@@ -16,5 +16,5 @@ public class Game
 
 	public DateTime _ModifiedAt { get; set; }
 
-	public IEnumerable<GameVersion>? GameVersions { get; set; } 
+	public ICollection<GameVersion>? GameVersions { get; set; } 
 }

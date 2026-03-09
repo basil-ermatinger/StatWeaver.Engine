@@ -67,7 +67,9 @@ EXEC sp_executesql @sql;
 --------------------------------------------------
 SET @sql = N'';
 
-SELECT @sql = @sql + N'DBCC CHECKIDENT (''' + vt.SchemaName + N'.' + vt.TableName + N''', RESEED, 0);' + CHAR(13) + CHAR(10)
+SELECT @sql = @sql + 
+    N'IF NOT EXISTS (SELECT 1 FROM ' + QUOTENAME(vt.SchemaName) + N'.' + QUOTENAME(vt.TableName) + N')' + CHAR(13) + CHAR(10) + N'DBCC CHECKIDENT (''' + vt.SchemaName + N'.' + vt.TableName + N''', RESEED, 0);' + CHAR(13) + CHAR(10) +
+    N'ELSE' + CHAR(13) + CHAR(10) + N'DBCC CHECKIDENT (''' + vt.SchemaName + N'.' + vt.TableName + N''', RESEED, 0);' + CHAR(13) + CHAR(10)
 FROM @ValidatedTables vt
 INNER JOIN sys.tables t ON t.name = vt.TableName
 INNER JOIN sys.schemas s ON s.schema_id = t.schema_id AND s.name = vt.SchemaName

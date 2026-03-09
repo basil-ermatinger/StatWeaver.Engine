@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
+using StatWeaver.Engine.Application.Dtos.Game;
+using StatWeaver.Engine.Application.Dtos.GameVersion;
 using StatWeaver.Engine.Domain.Entities;
 using StatWeaver.Engine.Infrastructure.DbContexts;
 
@@ -18,17 +19,30 @@ public class GamesController : ControllerBase
   }
 
   [HttpGet]
-  public async Task<ActionResult<IEnumerable<Game>>> GetGames()
+  public async Task<ActionResult<IEnumerable<GameDto>>> GetGames()
   {
-    return await _context.Games.ToListAsync();
+    List<GameDto> games = await _context.Games
+      .Select(g => new GameDto(g.Id, g.Name, g.IsActive, null))
+      .ToListAsync();
+
+    return Ok(games);
   }
 
   [HttpGet("{aId}")]
-  public async Task<ActionResult<Game>> GetGame(int aId)
+  public async Task<ActionResult<GameDto>> GetGame(int aId)
   {
-    Game? game = await _context.Games
-      .Include(g => g.GameVersions)
-      .FirstOrDefaultAsync(g => g.Id == aId);
+    GameDto? game = await _context.Games
+      .Where(g => g.Id == aId)
+      .Select(g => new GameDto(
+        g.Id, 
+        g.Name, 
+        g.IsActive, 
+        g.GameVersions != null 
+          ? g.GameVersions
+            .Select(gv => new GameVersionSlimDto(gv.Id, gv.VersionLabel, gv.ReleasedAt, gv.IsDefault))
+            .ToList()
+          : null))
+      .FirstOrDefaultAsync();
 
     if (game == null)
     {
@@ -39,14 +53,25 @@ public class GamesController : ControllerBase
   }
 
   [HttpPut("{aId}")]
-  public async Task<IActionResult> PutGame(int aId, Game aGame)
+  public async Task<IActionResult> PutGame(int aId, GameDto aGameDto)
   {
-    if (aId != aGame.Id)
+    if (aId != aGameDto.Id)
     {
       return BadRequest();
     }
 
-    _context.Entry(aGame).State = EntityState.Modified;
+    Game? game = await _context.Games.FindAsync(aId);
+
+    if (game == null)
+    {
+      return NotFound();
+    }
+
+    game.Id = aGameDto.Id;
+    game.Name = aGameDto.Name;
+    game.IsActive = aGameDto.IsActive;
+
+    _context.Entry(game).State = EntityState.Modified;
 
     try
     {
@@ -68,12 +93,19 @@ public class GamesController : ControllerBase
   }
 
   [HttpPost]
-  public async Task<ActionResult<Game>> PostGame(Game game)
+  public async Task<ActionResult<GameDto>> PostGame(GameDto aGameDto)
   {
+    Game game = new Game
+    {
+      Id = aGameDto.Id,
+      Name = aGameDto.Name,
+      IsActive = aGameDto.IsActive
+    };
+
     _context.Games.Add(game);
     await _context.SaveChangesAsync();
 
-    return CreatedAtAction("GetGame", new { aId = game.Id }, game);
+    return CreatedAtAction("GetGame", new { aId = aGameDto.Id }, aGameDto);
   }
 
   [HttpDelete("{aId}")]
