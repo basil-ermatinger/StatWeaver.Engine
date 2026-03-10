@@ -1,4 +1,4 @@
-namespace StatWeaver.Engine.Application.Abstractions.CQRS;
+namespace StatWeaver.Engine.Application.Common;
 
 public class Result
 {
