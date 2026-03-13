@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using StatWeaver.Engine.Application.Abstractions.CQRS;
+using StatWeaver.Engine.Application.Common;
 using StatWeaver.Engine.Application.Dtos.GameVersion;
+using StatWeaver.Engine.Application.Features.GameVersions.Commands;
 using StatWeaver.Engine.Domain.Entities;
 using StatWeaver.Engine.Infrastructure.DbContexts;
 
@@ -12,11 +15,15 @@ namespace StatWeaver.Engine.API.Controllers;
 [ApiController]
 public class GameVersionsController : ControllerBase
 {
-  private readonly StatWeaverDbContext _context;
+  private readonly IStatWeaverDbContext _context;
+  private readonly ICommandDispatcher _commandDispatcher;
+  private readonly IQueryDispatcher _queryDispatcher;
 
-  public GameVersionsController(StatWeaverDbContext aContext)
+  public GameVersionsController(IStatWeaverDbContext aContext, ICommandDispatcher aCommandDispatcher, IQueryDispatcher aQueryDispatcher)
   {
     _context = aContext;
+    _commandDispatcher = aCommandDispatcher;
+    _queryDispatcher = aQueryDispatcher;
   }
     
   [HttpGet]
@@ -66,8 +73,6 @@ public class GameVersionsController : ControllerBase
     gameVersion.IsDefault = aGameVersionDto.IsDefault;
     gameVersion.GameId = aGameVersionDto.GameId;
 
-    _context.Entry(gameVersion).State = EntityState.Modified;
-
     try
     {
       await _context.SaveChangesAsync();
@@ -88,7 +93,7 @@ public class GameVersionsController : ControllerBase
   }
 
   [HttpPost]
-  public async Task<ActionResult<GameVersionDto>> PostGameVersion(GameVersionDto aGameVersionDto)
+  public async Task<ActionResult<GameVersionDto>> PostGameVersion(GameVersionDto aGameVersionDto, CancellationToken aCancellationToken)
   {
     GameVersion gameVersion = new GameVersion
     {
@@ -99,10 +104,14 @@ public class GameVersionsController : ControllerBase
       GameId = aGameVersionDto.GameId
     };
 
-    _context.GameVersions.Add(gameVersion);
-    await _context.SaveChangesAsync();
+    Result result = await _commandDispatcher.Dispatch(new CreateGameVersionCommand(gameVersion), aCancellationToken);
 
-    return CreatedAtAction("GetGameVersion", new { aId = aGameVersionDto.Id }, aGameVersionDto);
+    if (result.IsSuccess)
+    {
+      return CreatedAtAction("GetGameVersion", new { aId = aGameVersionDto.Id }, aGameVersionDto);
+    }
+
+    return BadRequest(result.Error);
   }
 
   [HttpDelete("{aId}")]
