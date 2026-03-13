@@ -6,9 +6,9 @@ using StatWeaver.Engine.Domain.Entities;
 
 namespace StatWeaver.Engine.Infrastructure.DbContexts;
 
-public class StatWeaverDbContext : DbContext
+public class StatWeaverDbContext : DbContext, IStatWeaverDbContext
 {
-	public StatWeaverDbContext(DbContextOptions<StatWeaverDbContext> options) : base(options) {	}
+	public StatWeaverDbContext(DbContextOptions<StatWeaverDbContext> options) : base(options) { }
 
 	public DbSet<Game> Games { get; set; }
 	public DbSet<GameVersion> GameVersions { get; set; }
@@ -17,11 +17,11 @@ public class StatWeaverDbContext : DbContext
 	{
 		base.OnModelCreating(aModelBuilder);
 
-		foreach (IMutableEntityType entityType in aModelBuilder.Model.GetEntityTypes())
+		foreach(IMutableEntityType entityType in aModelBuilder.Model.GetEntityTypes())
 		{
 			IMutableProperty? uidProperty = entityType.FindProperty("Uid");
 
-			if (uidProperty != null && uidProperty.ClrType == typeof(Guid))
+			if(uidProperty != null && uidProperty.ClrType == typeof(Guid))
 			{
 				uidProperty.SetDefaultValueSql("NEWID()");
 			}
@@ -46,15 +46,15 @@ public class StatWeaverDbContext : DbContext
 			.Where(e => e.State == EntityState.Added || e.State == EntityState.Modified)
 			.ToList();
 
-		foreach (EntityEntry entry in entries)
+		foreach(EntityEntry entry in entries)
 		{
 			DateTime now = DateTime.Now;
-			
-			if (entry.State == EntityState.Added)
+
+			if(entry.State == EntityState.Added)
 			{
 				entry.Property("_CreatedAt")?.CurrentValue = now;
 				entry.Property("_ModifiedAt")?.CurrentValue = now;
-			} 
+			}
 			else
 			{
 				entry.Property("Uid").IsModified = false;

@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\StatWeaver.Engine.Domain\StatWeaver.Engine.Domain.csproj" />
+    <ProjectReference Include="..\StatWeaver.Engine.Infrastructure\StatWeaver.Engine.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>
