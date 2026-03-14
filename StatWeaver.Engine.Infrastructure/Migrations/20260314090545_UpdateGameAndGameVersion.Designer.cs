@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StatWeaver.Engine.Infrastructure.DbContexts;
 
@@ -11,9 +12,11 @@ using StatWeaver.Engine.Infrastructure.DbContexts;
 namespace StatWeaver.Engine.Infrastructure.Migrations
 {
     [DbContext(typeof(StatWeaverDbContext))]
-    partial class StatWeaverDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260314090545_UpdateGameAndGameVersion")]
+    partial class UpdateGameAndGameVersion
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

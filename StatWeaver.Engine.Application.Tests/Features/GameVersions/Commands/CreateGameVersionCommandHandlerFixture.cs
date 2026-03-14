@@ -1,16 +1,80 @@
-﻿namespace StatWeaver.Engine.Application.Tests.Features.GameVersions.Commands;
+﻿using Microsoft.EntityFrameworkCore;
+using StatWeaver.Engine.Application.Common;
+using StatWeaver.Engine.Application.Features.GameVersions.Commands;
+using StatWeaver.Engine.Domain.Entities;
+using StatWeaver.Engine.Testing.TestInfrastructure;
+
+namespace StatWeaver.Engine.Application.Tests.Features.GameVersions.Commands;
 
 [TestClass]
-public class CreateGameVersionCommandHandlerFixture
+public class CreateGameVersionCommandHandlerFixture : SqlServerIntegrationTestBase
 {
+	private CreateGameVersionCommandHandler _handler = null!;
+
+	protected override Task InitializeHandlerAsync()
+	{
+		_handler = new CreateGameVersionCommandHandler(Context);
+		return Task.CompletedTask;
+	}
+
 	[TestMethod]
-	public void Handle_CreateNewGameVersion_GameVersionCreated()
+	public async Task Handle_CreateNewGameVersion_GameVersionCreatedSuccessfully()
 	{
 		// Arrange
+		Game game = new Game
+		{
+			Uid = Guid.NewGuid(),
+			Name = "Test Game",
+			IsActive = true
+		};
+
+		Context.Games.Add(game);
+
+		await Context.SaveChangesAsync();
+
+		GameVersion gameVersion = new GameVersion
+		{
+			Uid = Guid.NewGuid(),
+			VersionLabel = "1.0.0",
+			ReleasedAt = DateTime.UtcNow,
+			IsDefault = true,
+			GameId = game.Id
+		};
+
+		CreateGameVersionCommand command = new CreateGameVersionCommand(gameVersion);
 
 		// Act
+		Result result = await _handler.Handle(command, CancellationToken.None);
 
 		// Assert
-		Assert.IsTrue(true);
+		Assert.IsTrue(result.IsSuccess);
+
+		GameVersion? savedGameVersion = await Context.GameVersions.FirstOrDefaultAsync(gv => gv.Uid == gameVersion.Uid);
+
+		Assert.IsNotNull(savedGameVersion);
+		Assert.AreEqual(gameVersion.VersionLabel, savedGameVersion.VersionLabel);
+		Assert.AreEqual(gameVersion.IsDefault, savedGameVersion.IsDefault);
+		Assert.AreEqual(game.Id, savedGameVersion.GameId);
+	}
+
+	[TestMethod]
+	public async Task Handle_CreateGameVersionWithNullValue_ReturnsFailure()
+	{
+		// Arrange
+		CreateGameVersionCommand command = new CreateGameVersionCommand(null);
+
+		// Act
+		Result result = await _handler.Handle(command, CancellationToken.None);
+
+		// Assert
+		Assert.IsFalse(result.IsSuccess, "Command sollte fehlschlagen");
+
+		int gameVersionCount = await Context.GameVersions.CountAsync();
+		Assert.AreEqual(0, gameVersionCount, "Keine GameVersion sollte in der Datenbank sein");
+	}
+
+	protected override async Task SeedAsync()
+	{
+		await Task.CompletedTask;
 	}
 }

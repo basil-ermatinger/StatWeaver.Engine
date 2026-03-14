@@ -4,4 +4,5 @@
   <Project Path="StatWeaver.Engine.Application/StatWeaver.Engine.Application.csproj" Id="9fb26804-2c73-4fba-955e-306fb6e386b2" />
   <Project Path="StatWeaver.Engine.Domain/StatWeaver.Engine.Domain.csproj" />
   <Project Path="StatWeaver.Engine.Infrastructure/StatWeaver.Engine.Infrastructure.csproj" Id="a90e7733-3d48-461f-ba80-77e72e1a9195" />
+  <Project Path="StatWeaver.Engine.Testing/StatWeaver.Engine.Testing.csproj" Id="8c8a8842-c15c-4021-9e31-02a88ce267c3" />
 </Solution>
