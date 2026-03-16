@@ -58,12 +58,7 @@ public abstract class SqlServerIntegrationTestBase
 
 		await Context.Database.EnsureDeletedAsync();
 
-		// Für Tests: Erstelle DB basierend auf aktuellem Model (ohne Migrationen)
 		await Context.Database.EnsureCreatedAsync();
-
-		await SeedAsync();
-
-		await InitializeHandlerAsync();
 	}
 
 	[TestCleanup]
@@ -81,15 +76,5 @@ public abstract class SqlServerIntegrationTestBase
 		{
 			// TODO BasilErmatinger 20260314: optional loggen
 		}
-	}
-
-	protected virtual Task SeedAsync()
-	{
-		return Task.CompletedTask;
-	}
-
-	protected virtual Task InitializeHandlerAsync()
-	{
-		return Task.CompletedTask;
 	}
 }

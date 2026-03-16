@@ -9,14 +9,6 @@ namespace StatWeaver.Engine.Application.Tests.Features.GameVersions.Commands;
 [TestClass]
 public class CreateGameVersionCommandHandlerFixture : SqlServerIntegrationTestBase
 {
-	private CreateGameVersionCommandHandler _handler = null!;
-
-	protected override Task InitializeHandlerAsync()
-	{
-		_handler = new CreateGameVersionCommandHandler(Context);
-		return Task.CompletedTask;
-	}
-
 	[TestMethod]
 	public async Task Handle_CreateNewGameVersion_GameVersionCreatedSuccessfully()
 	{
@@ -41,10 +33,11 @@ public class CreateGameVersionCommandHandlerFixture : SqlServerIntegrationTestBa
 			GameId = game.Id
 		};
 
+		CreateGameVersionCommandHandler handler = new CreateGameVersionCommandHandler(Context); // TODO BasilErmatinger: Check, how could this be done via Dependency Injection
 		CreateGameVersionCommand command = new CreateGameVersionCommand(gameVersion);
 
 		// Act
-		Result result = await _handler.Handle(command, CancellationToken.None);
+		Result result = await handler.Handle(command, CancellationToken.None);
 
 		// Assert
 		Assert.IsTrue(result.IsSuccess);
@@ -62,19 +55,16 @@ public class CreateGameVersionCommandHandlerFixture : SqlServerIntegrationTestBa
 	{
 		// Arrange
 		CreateGameVersionCommand command = new CreateGameVersionCommand(null);
+		CreateGameVersionCommandHandler handler = new CreateGameVersionCommandHandler(Context); // TODO BasilErmatinger: Check, how could this be done via Dependency Injection
+
 
 		// Act
-		Result result = await _handler.Handle(command, CancellationToken.None);
+		Result result = await handler.Handle(command, CancellationToken.None);
 
 		// Assert
 		Assert.IsFalse(result.IsSuccess, "Command sollte fehlschlagen");
 
 		int gameVersionCount = await Context.GameVersions.CountAsync();
 		Assert.AreEqual(0, gameVersionCount, "Keine GameVersion sollte in der Datenbank sein");
-	}
-
-	protected override async Task SeedAsync()
-	{
-		await Task.CompletedTask;
 	}
 }
