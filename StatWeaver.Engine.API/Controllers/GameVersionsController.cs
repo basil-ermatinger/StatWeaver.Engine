@@ -29,9 +29,7 @@ public class GameVersionsController : ControllerBase
   [HttpGet]
   public async Task<ActionResult<IEnumerable<GameVersionDto>>> GetGameVersions()
   {
-    List<GameVersionDto> gameVersions = await _context.GameVersions
-      .Select(gv => new GameVersionDto(gv.Id, gv.VersionLabel, gv.ReleasedAt, gv.IsDefault, gv.GameId))
-      .ToListAsync();
+    var? gameVersions = null;
 
     return Ok(gameVersions);
   }
