@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+
 using StatWeaver.Engine.Application.Abstractions.CQRS;
 
 namespace StatWeaver.Engine.Application.Common;
