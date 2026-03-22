@@ -1,6 +1,11 @@
 using StatWeaver.Engine.Application.Abstractions.CQRS;
+using StatWeaver.Engine.Application.Abstractions.Services;
 using StatWeaver.Engine.Application.Common;
+using StatWeaver.Engine.Application.Dtos.GameVersion;
 using StatWeaver.Engine.Application.Features.GameVersions.Commands;
+using StatWeaver.Engine.Application.Features.GameVersions.Queries;
+using StatWeaver.Engine.Application.Features.GameVersions.Services;
+
 using StatWeaver.Engine.Infrastructure.DbContexts;
 using StatWeaver.Engine.Infrastructure.ServiceRegistration;
 
@@ -13,6 +18,8 @@ builder.Services.AddScoped<IStatWeaverDbContext, StatWeaverDbContext>();
 builder.Services.AddScoped<ICommandDispatcher, CommandDispatcher>();
 builder.Services.AddScoped<IQueryDispatcher, QueryDispatcher>();
 builder.Services.AddScoped<ICommandHandler<CreateGameVersionCommand>, CreateGameVersionCommandHandler>();
+builder.Services.AddScoped<IGameVersionsService, GameVersionsService>();
+builder.Services.AddScoped<IQueryHandler<GetGameVersionQuery, GameVersionDto>, GetGameVersionQueryHandler>();
 
 builder.Services
 	.AddControllers()

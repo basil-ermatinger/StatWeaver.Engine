@@ -1,10 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+
 using StatWeaver.Engine.Application.Abstractions.CQRS;
+using StatWeaver.Engine.Application.Abstractions.Services;
 using StatWeaver.Engine.Application.Common;
 using StatWeaver.Engine.Application.Dtos.GameVersion;
 using StatWeaver.Engine.Application.Features.GameVersions.Commands;
+
 using StatWeaver.Engine.Domain.Entities;
+
 using StatWeaver.Engine.Infrastructure.DbContexts;
 
 namespace StatWeaver.Engine.API.Controllers;
@@ -17,38 +21,36 @@ public class GameVersionsController : ControllerBase
 {
   private readonly IStatWeaverDbContext _context;
   private readonly ICommandDispatcher _commandDispatcher;
-  private readonly IQueryDispatcher _queryDispatcher;
+  private readonly IGameVersionsService _gameVersionsService;
 
-  public GameVersionsController(IStatWeaverDbContext aContext, ICommandDispatcher aCommandDispatcher, IQueryDispatcher aQueryDispatcher)
+  public GameVersionsController(IStatWeaverDbContext aContext, ICommandDispatcher aCommandDispatcher, IQueryDispatcher aQueryDispatcher, IGameVersionsService aGameVersionsService)
   {
     _context = aContext;
     _commandDispatcher = aCommandDispatcher;
-    _queryDispatcher = aQueryDispatcher;
+    _gameVersionsService = aGameVersionsService;
   }
     
   [HttpGet]
   public async Task<ActionResult<IEnumerable<GameVersionDto>>> GetGameVersions()
   {
-    var? gameVersions = null;
+    //var? gameVersions = null;
 
-    return Ok(gameVersions);
+    //return Ok(gameVersions);
+    return null;
   }
 
   [HttpGet("{aId}")]
   public async Task<ActionResult<GameVersionDto>> GetGameVersion(int aId)
   {
-    GameVersionDto? gameVersion = await _context.GameVersions
-      .Where(gv => gv.Id == aId)
-      .Select(gv => new GameVersionDto(gv.Id, gv.VersionLabel, gv.ReleasedAt, gv.IsDefault, gv.GameId))
-      .FirstOrDefaultAsync();
+    Result<GameVersionDto> result = await _gameVersionsService.GetGameVersionAsync(aId, CancellationToken.None);
 
-    if (gameVersion == null)
+    if (result.IsFailure)
     {
-      return NotFound();
+      return NotFound(result.Error);
     }
 
-    return gameVersion;
-  }
+    return Ok(result.Value);
+	}
 
   [HttpPut("{aId}")]
   public async Task<IActionResult> PutGameVersion(int aId, GameVersionDto aGameVersionDto)

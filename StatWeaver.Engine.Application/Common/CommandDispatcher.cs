@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using StatWeaver.Engine.Application.Abstractions.CQRS;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace StatWeaver.Engine.Application.Common;
 

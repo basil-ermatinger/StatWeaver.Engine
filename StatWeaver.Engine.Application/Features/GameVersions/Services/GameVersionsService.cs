@@ -17,15 +17,25 @@ public class GameVersionsService : IGameVersionsService
 
 	public async Task<IEnumerable<GameVersionDto>> GetGameVersionsAsync()
 	{
-		GetGameVersionQuery query = new GetGameVersionQuery();
+		//GetGameVersionQueryHandler query = new GetGameVersionQuery();
 
-		Result<IEnumerable<GameVersionDto>> result = await _queryDispatcher.Dispatch<GetGameVersionQuery, IEnumerable<GameVersionDto>>(query, CancellationToken.None);
+		//Result<IEnumerable<GameVersionDto>> result = await _queryDispatcher.Dispatch<GetGameVersionQueryHandler, IEnumerable<GameVersionDto>>(query, CancellationToken.None);
 
-		if(!result.IsSuccess)
-		{
-			throw new InvalidOperationException("Failed to retrieve game versions");
-		}
+		//if(!result.IsSuccess)
+		//{
+		//	throw new InvalidOperationException("Failed to retrieve game versions");
+		//}
 
-		return result.Value;
+		//return result.Value;
+		return null;
+	}
+
+	public async Task<Result<GameVersionDto>> GetGameVersionAsync(int aId, CancellationToken aCancellationToken)
+	{
+		GetGameVersionQuery query = new() { Id = aId };
+
+		Result<GameVersionDto> result = await _queryDispatcher.Dispatch<GetGameVersionQuery, GameVersionDto>(query, aCancellationToken);
+		
+		return result;
 	}
 }
