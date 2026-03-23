@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-
+using StatWeaver.Engine.Application.Abstractions.CQRS;
 using StatWeaver.Engine.Application.Common;
 using StatWeaver.Engine.Application.Dtos.GameVersion;
 
@@ -7,7 +7,7 @@ using StatWeaver.Engine.Infrastructure.DbContexts;
 
 namespace StatWeaver.Engine.Application.Features.GameVersions.Queries;
 
-public class GetGameVersionsQueryHandler
+public class GetGameVersionsQueryHandler : IQueryHandler<GetGameVersionsQuery, IEnumerable<GameVersionDto>>
 {
 	private readonly IStatWeaverDbContext _context;
 
@@ -16,7 +16,7 @@ public class GetGameVersionsQueryHandler
 		_context = aContext;
 	}
 
-	public async Task<Result<IEnumerable<GameVersionDto>>> Handle(GetGameVersionQueryHandler aQuery, CancellationToken aCancellationToken)
+	public async Task<Result<IEnumerable<GameVersionDto>>> Handle(GetGameVersionsQuery aQuery, CancellationToken aCancellationToken)
 	{
 		IEnumerable<GameVersionDto> gameVersions = await _context.GameVersions
 			.Select(gv => new GameVersionDto(gv.Id, gv.VersionLabel, gv.ReleasedAt, gv.IsDefault, gv.GameId))

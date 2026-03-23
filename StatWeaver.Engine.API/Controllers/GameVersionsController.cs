@@ -23,7 +23,7 @@ public class GameVersionsController : ControllerBase
   private readonly ICommandDispatcher _commandDispatcher;
   private readonly IGameVersionsService _gameVersionsService;
 
-  public GameVersionsController(IStatWeaverDbContext aContext, ICommandDispatcher aCommandDispatcher, IQueryDispatcher aQueryDispatcher, IGameVersionsService aGameVersionsService)
+  public GameVersionsController(IStatWeaverDbContext aContext, ICommandDispatcher aCommandDispatcher, IGameVersionsService aGameVersionsService)
   {
     _context = aContext;
     _commandDispatcher = aCommandDispatcher;
@@ -33,10 +33,14 @@ public class GameVersionsController : ControllerBase
   [HttpGet]
   public async Task<ActionResult<IEnumerable<GameVersionDto>>> GetGameVersions()
   {
-    //var? gameVersions = null;
+		Result<IEnumerable<GameVersionDto>> result = await _gameVersionsService.GetGameVersionsAsync(CancellationToken.None);
 
-    //return Ok(gameVersions);
-    return null;
+    if (result.IsFailure)
+    {
+      return NotFound(result.Error);
+    }
+
+    return Ok(result.Value);
   }
 
   [HttpGet("{aId}")]

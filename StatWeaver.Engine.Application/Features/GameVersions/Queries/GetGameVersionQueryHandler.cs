@@ -8,7 +8,7 @@ using StatWeaver.Engine.Infrastructure.DbContexts;
 
 namespace StatWeaver.Engine.Application.Features.GameVersions.Queries;
 
-public class GetGameVersionQueryHandler : IQueryHandler<GetGameVersionQuery, GameVersionDto>//IQuery<IEnumerable<GameVersionDto>>
+public class GetGameVersionQueryHandler : IQueryHandler<GetGameVersionQuery, GameVersionDto>
 {
 	private readonly IStatWeaverDbContext _context;
 

@@ -19,7 +19,8 @@ builder.Services.AddScoped<ICommandDispatcher, CommandDispatcher>();
 builder.Services.AddScoped<IQueryDispatcher, QueryDispatcher>();
 builder.Services.AddScoped<ICommandHandler<CreateGameVersionCommand>, CreateGameVersionCommandHandler>();
 builder.Services.AddScoped<IGameVersionsService, GameVersionsService>();
-builder.Services.AddScoped<IQueryHandler<GetGameVersionQuery, GameVersionDto>, GetGameVersionQueryHandler>();
+builder.Services.AddScoped<IQueryHandler<GetGameVersionsQuery, IEnumerable<GameVersionDto>>, GetGameVersionsQueryHandler>();
+builder.Services.AddScoped<IQueryHandler<GetGameVersionQuery, GameVersionDto>, GetGameVersionQueryHandler>(); 
 
 builder.Services
 	.AddControllers()
