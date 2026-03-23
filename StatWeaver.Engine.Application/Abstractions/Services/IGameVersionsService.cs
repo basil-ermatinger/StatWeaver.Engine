@@ -5,7 +5,7 @@ namespace StatWeaver.Engine.Application.Abstractions.Services;
 
 public interface IGameVersionsService
 {
-	Task<IEnumerable<GameVersionDto>> GetGameVersionsAsync();
+	Task<Result<IEnumerable<GameVersionDto>>> GetGameVersionsAsync(CancellationToken aCancellationToken);
 
 	Task<Result<GameVersionDto>> GetGameVersionAsync(int aId, CancellationToken aCancellationToken);
 }
