@@ -1,55 +1,72 @@
-using static System.Runtime.InteropServices.JavaScript.JSType;
-
 namespace StatWeaver.Engine.Application.Common;
 
-public class Result
+public readonly record struct Result
 {
-	protected internal Result(bool isSuccess, Error error)
-	{
-		if(isSuccess && error != Error.None)
-		{
-			throw new InvalidOperationException();
-		}
-
-		if(!isSuccess && error == Error.None)
-		{
-			throw new InvalidOperationException();
-		}
-
-		IsSuccess = isSuccess;
-		Error = error;
-	}
-
 	public bool IsSuccess { get; }
 
-	public bool IsFailure => !IsSuccess;
+	public Error[] Errors { get; }
 
-	public Error Error { get; }
+	private Result(bool aIsSuccess, Error[] aErrors)
+	{
+		IsSuccess = aIsSuccess;
+		Errors = aErrors;
+	}
 
-	public static Result Success() => new(true, Error.None);
+	public static Result Success()
+	{
+		return new(true, Array.Empty<Error>());
+	}
 
-	public static Result<TValue> Success<TValue>(TValue value) => new(value, true, Error.None);
+	public static Result Failure(params Error[] aErrors)
+	{
+		return new(false, aErrors);
+	}
 
-	public static Result Failure(Error error) => new(false, error);
-
-	public static Result<TValue> Failure<TValue>(Error error) => new(default, false, error);
-
-	public static Result Create(bool condition) => condition ? Success() : Failure(Error.ConditionNotMet);
-
-	public static Result<TValue> Create<TValue>(TValue? value) => value is not null ? Success(value) : Failure<TValue>(Error.NullValue);
+	public static Result Combine(params Result[] aResults)
+	{
+		return aResults.Any(r => !r.IsSuccess)
+			? Failure(aResults.Where(r => !r.IsSuccess).SelectMany(r => r.Errors).ToArray())
+			: Success();
+	}
 }
 
-public class Result<TValue> : Result
+public readonly record struct Result<T>
 {
-	private readonly TValue? _value;
+	public bool IsSuccess { get; }
 
-	protected internal Result(TValue? value, bool isSuccess, Error error)
-			: base(isSuccess, error) =>
-			_value = value;
+	public T? Value { get; }
 
-	public TValue Value => IsSuccess
-			? _value!
-			: throw new InvalidOperationException("The value of a failure result can not be accessed.");
+	public Error[] Errors { get; }
 
-	public static implicit operator Result<TValue>(TValue? value) => Create(value);
+	private Result(bool aIsSuccess, T? aValue, Error[] aErrors)
+	{
+		IsSuccess = aIsSuccess;
+		Value = aValue;
+		Errors = aErrors;
+	}
+
+	public static Result<T> Success(T aValue)
+	{
+		return new(true, aValue, Array.Empty<Error>());
+	}
+
+	public static Result<T> Failure(params Error[] aErrors)
+	{
+		return new(false, default, aErrors);
+	}
+
+	public Result<K> Map<K>(Func<T, K> aMap)
+	{
+		return IsSuccess ? Result<K>.Success(aMap(Value!)) : Result<K>.Failure(Errors);
+	}
+
+	public Result<K> Bind<K>(Func<T, Result<K>> aNext)
+	{
+		return IsSuccess ? aNext(Value!) : Result<K>.Failure(Errors);
+	}
+
+	public Result<T> Ensure(Func<T, bool> aPredicate, Error aError)
+	{
+		return IsSuccess && !aPredicate(Value!) ? Failure(aError) : this;
+	}
 }
