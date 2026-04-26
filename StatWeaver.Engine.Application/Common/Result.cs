@@ -22,6 +22,16 @@ public readonly record struct Result
 		return new(false, aErrors);
 	}
 
+	public static Result NotFound(params Error[] aErrors)
+	{
+		return new(false, aErrors);
+	}
+
+	public static Result BadRequest(params Error[] aErrors)
+	{
+		return new(false, aErrors);
+	}
+
 	public static Result Combine(params Result[] aResults)
 	{
 		return aResults.Any(r => !r.IsSuccess)
@@ -53,6 +63,16 @@ public readonly record struct Result<T>
 	public static Result<T> Failure(params Error[] aErrors)
 	{
 		return new(false, default, aErrors);
+	}
+
+	public static Result<T> NotFound()
+	{
+		return new(false, default, []);
+	}
+
+	public static Result<T> BadRequest()
+	{
+		return new(false, default, []);
 	}
 
 	public Result<K> Map<K>(Func<T, K> aMap)

@@ -26,7 +26,7 @@ public class GetGameVersionQueryHandler : IQueryHandler<GetGameVersionQuery, Gam
 
 		if (gameVersion is null)
 		{
-			return Result.Failure<GameVersionDto>(Error.NotFound($"Game version with ID '{aQuery.Id}' was not found."));
+			return Result<GameVersionDto>.NotFound();
 		}
 
 		return Result<GameVersionDto>.Success(gameVersion);

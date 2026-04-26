@@ -22,6 +22,6 @@ public class GetGameVersionsQueryHandler : IQueryHandler<GetGameVersionsQuery, I
 			.Select(gv => new GameVersionDto(gv.Id, gv.VersionLabel, gv.ReleasedAt, gv.IsDefault, gv.GameId))
 			.ToListAsync(cancellationToken: aCancellationToken);
 
-		return Result.Success(gameVersions);
+		return Result<IEnumerable<GameVersionDto>>.Success(gameVersions);
 	}
 }
