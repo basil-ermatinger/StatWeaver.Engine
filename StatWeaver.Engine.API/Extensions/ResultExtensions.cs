@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using StatWeaver.Engine.Application.Common;
+using StatWeaver.Engine.Application.Common.Enums;
 
 namespace StatWeaver.Engine.API.Extensions;
 
