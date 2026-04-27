@@ -1,3 +1,5 @@
+using StatWeaver.Engine.Application.Common.Enums;
+
 namespace StatWeaver.Engine.Application.Common;
 
 public readonly record struct Result
