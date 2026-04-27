@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
+using StatWeaver.Engine.API.Extensions;
 using StatWeaver.Engine.Application.Abstractions.CQRS;
 using StatWeaver.Engine.Application.Abstractions.Services;
 using StatWeaver.Engine.Application.Common;
@@ -30,43 +31,31 @@ public class GameVersionsController : ControllerBase
     _gameVersionsService = aGameVersionsService;
   }
     
-  [HttpGet]
-  public async Task<ActionResult<IEnumerable<GameVersionDto>>> GetGameVersions()
-  {
+	[HttpGet]
+	public async Task<ActionResult<IEnumerable<GameVersionDto>>> GetGameVersions()
+	{
 		Result<IEnumerable<GameVersionDto>> result = await _gameVersionsService.GetGameVersionsAsync(CancellationToken.None);
+		return result.ToActionResult(this);
+	}
 
-    if (result.IsFailure)
-    {
-      return NotFound(result.Error);
-    }
-
-    return Ok(result.Value);
-  }
-
-  [HttpGet("{aId}")]
-  public async Task<ActionResult<GameVersionDto>> GetGameVersion(int aId)
-  {
-    Result<GameVersionDto> result = await _gameVersionsService.GetGameVersionAsync(aId, CancellationToken.None);
-
-    if (result.IsFailure)
-    {
-      return NotFound(result.Error);
-    }
-
-    return Ok(result.Value);
+	[HttpGet("{aId}")]
+	public async Task<ActionResult<GameVersionDto>> GetGameVersion(int aId)
+	{
+		Result<GameVersionDto> result = await _gameVersionsService.GetGameVersionAsync(aId, CancellationToken.None);
+		return result.ToActionResult(this);
 	}
 
   [HttpPut("{aId}")]
   public async Task<IActionResult> PutGameVersion(int aId, GameVersionDto aGameVersionDto)
   {
-    if (aId != aGameVersionDto.Id)
+    if(aId != aGameVersionDto.Id)
     {
       return BadRequest();
     }
 
-		GameVersion? gameVersion = await _context.GameVersions.FindAsync(aId);
+    GameVersion? gameVersion = await _context.GameVersions.FindAsync(aId);
 
-    if (gameVersion == null)
+    if(gameVersion == null)
     {
       return NotFound();
     }
@@ -81,9 +70,9 @@ public class GameVersionsController : ControllerBase
     {
       await _context.SaveChangesAsync();
     }
-    catch (DbUpdateConcurrencyException)
+    catch(DbUpdateConcurrencyException)
     {
-      if (! await GameVersionExists(aId))
+      if(!await GameVersionExists(aId))
       {
         return NotFound();
       }
@@ -115,7 +104,7 @@ public class GameVersionsController : ControllerBase
       return CreatedAtAction("GetGameVersion", new { aId = aGameVersionDto.Id }, aGameVersionDto);
     }
 
-    return BadRequest(result.Error);
+    return result.ToActionResult(this);
   }
 
   [HttpDelete("{aId}")]
