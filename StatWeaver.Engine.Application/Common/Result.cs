@@ -22,14 +22,14 @@ public readonly record struct Result
 		return new(false, aErrors);
 	}
 
-  public static Result NotFound(params Error[] aErrors)
+	public static Result NotFound(params Error[] aErrors)
 	{
-		return new(false, aErrors.Length > 0 ? aErrors : new[] { new Error("NotFound", "Resource was not found.") });
+		return new(false, aErrors.Length > 0 ? aErrors : new[] { new Error("NotFound", "Resource was not found.", ErrorType.NotFound) });
 	}
 
 	public static Result BadRequest(params Error[] aErrors)
 	{
-		return new(false, aErrors.Length > 0 ? aErrors : new[] { new Error("BadRequest", "Bad request.") });
+		return new(false, aErrors.Length > 0 ? aErrors : new[] { new Error("BadRequest", "Bad request.", ErrorType.BadRequest) });
 	}
 
 	public static Result Combine(params Result[] aResults)
@@ -63,14 +63,14 @@ public readonly record struct Result<T>
 		return new(false, default, aErrors);
 	}
 
-  public static Result<T> NotFound(params Error[] aErrors)
+	public static Result<T> NotFound(params Error[] aErrors)
 	{
-		return new(false, default, aErrors.Length > 0 ? aErrors : new[] { new Error("NotFound", "Resource was not found.") });
+		return new(false, default, aErrors.Length > 0 ? aErrors : new[] { new Error("NotFound", "Resource was not found.", ErrorType.NotFound) });
 	}
 
 	public static Result<T> BadRequest(params Error[] aErrors)
 	{
-		return new(false, default, aErrors.Length > 0 ? aErrors : new[] { new Error("BadRequest", "Bad request.") });
+		return new(false, default, aErrors.Length > 0 ? aErrors : new[] { new Error("BadRequest", "Bad request.", ErrorType.BadRequest) });
 	}
 
 	public Result<K> Map<K>(Func<T, K> aMap)
